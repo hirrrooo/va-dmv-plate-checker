@@ -1,7 +1,5 @@
 import bs4
 import requests
-import time
-
 
 class PlateLengthError(Exception):
   pass

@@ -18,4 +18,3 @@ with open("./output.txt", "w") as output:
   p.map(check, word_list)
   p.close()
   p.join()
-  
