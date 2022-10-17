@@ -1,5 +1,7 @@
 import bs4
 import requests
+import time
+
 
 class PlateLengthError(Exception):
   pass
@@ -45,12 +47,13 @@ class API:
     plate = plate.strip().upper()
 
     # Check for plate length, VA plates typically don't exceed 7 characters
-    if not 0 < len(plate) <= self.max_plate_length:
+    if not 0 < len(plate) <= self.max_plate_length: # (7)
       raise PlateLengthError
 
     response = self.session.post(self.url, headers=self.headers, data=self.payload.format(plate=plate), allow_redirects=True)
 
     soup = bs4.BeautifulSoup(response.text, "lxml") # lxml run faster than html.parser!
     search = soup.find_all(lambda tag: tag.name == "font" and "congratulations" in tag.text.lower())
+    # time.sleep(1)
 
     return len(search) > 0
