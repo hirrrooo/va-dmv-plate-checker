@@ -52,6 +52,5 @@ class API:
 
     soup = bs4.BeautifulSoup(response.text, "lxml") # lxml run faster than html.parser!
     search = soup.find_all(lambda tag: tag.name == "font" and "congratulations" in tag.text.lower())
-    # time.sleep(1)
 
     return len(search) > 0

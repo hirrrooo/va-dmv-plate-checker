@@ -1,9 +1,10 @@
 from PlateAPI import API
+from colorama import Fore, Style
 import multiprocessing.dummy as mp
-import colorama
+
 
 obj = API()
-words = open("every2lettercombo.txt", "r").read().splitlines() 
+words = open("ccc.txt", "r").read().splitlines() 
 # words = open("words.txt", "r").read().splitlines()
 
 with open("./output.txt", "w") as output:
@@ -11,9 +12,13 @@ with open("./output.txt", "w") as output:
   def check(word):
     print(f"Query: {word.upper()}")
     query = obj.check_plate(plate=word)
-    print(f"Available: {query}\n")
+    if query == True:
+      print(f"{Fore.GREEN}Available: {query}{Style.RESET_ALL}\n")
+    else:
+      print(f"{Fore.RED}Available: {query}{Style.RESET_ALL}\n")
     if query:
       output.write(f"{word.upper()}\n")
+
   p = mp.Pool(1)
   p.map(check, word_list)
   p.close()
