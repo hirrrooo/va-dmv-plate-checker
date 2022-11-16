@@ -1,5 +1,8 @@
+import re
 import bs4
 import requests
+from rich import print
+
 
 class PlateLengthError(Exception):
   pass
@@ -40,17 +43,18 @@ class API:
     self.session = requests.Session()
     self.session.get(self.cookie_url)
 
+  def regex_check(string):
+    pattern = re.match("^([A-Z][0-9][a-z][&- ]+)+$")
+    pattern.match(string)
+
   def check_plate(self, plate):
-    # Prepare input
-    plate = plate.strip().upper()
-
-    # Check for plate length, VA plates typically don't exceed 7 characters
-    if not 0 < len(plate) <= self.max_plate_length: # (7)
-      raise PlateLengthError
-
-    response = self.session.post(self.url, headers=self.headers, data=self.payload.format(plate=plate), allow_redirects=True)
-
-    soup = bs4.BeautifulSoup(response.text, "lxml") # lxml run faster than html.parser!
-    search = soup.find_all(lambda tag: tag.name == "font" and "congratulations" in tag.text.lower())
-
-    return len(search) > 0
+    plate = plate.strip().upper() # Prepare input
+    while True:
+      if not 0 < len(plate) <= self.max_plate_length: # Check for plate length, VA plates typically don't exceed 7 characters
+        print(f"Plate length is invalid. Plate length must be between 1 and {self.max_plate_length} characters.")
+        return None
+      else: 
+        response = self.session.post(self.url, headers=self.headers, data=self.payload.format(plate=plate), allow_redirects=True)
+        soup = bs4.BeautifulSoup(response.text, "lxml") # lxml run faster than html.parser!
+        search = soup.find_all(lambda tag: tag.name == "font" and "congratulations" in tag.text.lower())
+        return len(search) > 0 # If the search is empty, the plate is not available, returns false.
